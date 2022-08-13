@@ -1,0 +1,25 @@
+specVersion: 0.0.4
+description: Subgraph to index curra addresses
+repository: https://github.com/<YOUR_GITHUB_NAME>/erc721-example
+schema:
+  file: ./schema.graphql
+dataSources:
+- kind: ethereum/contract
+  name: GasStation
+  network: ganache
+  source:
+    address: "0xB1916eFed54c084692Dd31064027550091Ca5D4c"
+    abi: GasStation
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.6
+    language: wasm/assemblyscript
+    entities:
+    - Parent
+    abis:
+    - name: GasStation
+      file: ./abis/GasStation.json
+    eventHandlers:
+    - event: Filled(uint256,address)
+      handler: handleFilled
+    file: ./src/mapping.ts

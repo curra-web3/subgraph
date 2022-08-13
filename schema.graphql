@@ -1,0 +1,8 @@
+type Parent @entity {
+  id: ID!
+}
+
+type Forwarder @entity {
+  id: Bytes!
+  parent: Parent!
+}
