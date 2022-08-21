@@ -1,8 +1,16 @@
 type Parent @entity {
-  id: ID!
+  id: Bytes!
 }
 
 type Forwarder @entity {
   id: Bytes!
   parent: Parent!
+}
+
+type Config @entity {
+  id: Bytes!
+  parent: Parent!
+  token: Bytes!
+  maxGasPrice: BigInt!
+  min: BigInt!
 }

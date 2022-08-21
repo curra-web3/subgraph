@@ -16,10 +16,16 @@ dataSources:
     language: wasm/assemblyscript
     entities:
     - Parent
+    - Forwarder
+    - Config
     abis:
     - name: GasStation
       file: ./abis/GasStation.json
+    - name: ERC20
+      file: ./abis/ERC20.json
     eventHandlers:
     - event: Filled(uint256,address)
       handler: handleFilled
+    - event: ConfigSet(address,address,uint256,uint256)
+      handler: handleConfigSet
     file: ./src/mapping.ts
