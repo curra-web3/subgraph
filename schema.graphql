@@ -1,14 +1,16 @@
 type Parent @entity {
-  id: Bytes!
+  id: String!
 }
 
 type Forwarder @entity {
-  id: Bytes!
+  id: String!
   parent: Parent!
+  index: Int!
+  flushReady: [String!]!
 }
 
 type Config @entity {
-  id: Bytes!
+  id: String!
   parent: Parent!
   token: Bytes!
   maxGasPrice: BigInt!
