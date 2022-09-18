@@ -24,10 +24,6 @@ export function handleFilled(event: Filled): void {
       Bytes.fromHexString(numberToUint256(i)),
       parentAddress
     );
-    log.info("Salt: {} {}", [
-      numberToUint256(i),
-      forwarderAddress.toHexString(),
-    ]);
 
     let forwarder = new Forwarder(forwarderAddress.toHexString());
     forwarder.parent = parent.id;
