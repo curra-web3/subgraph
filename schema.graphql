@@ -1,18 +1,42 @@
 type Parent @entity {
-  id: String!
+  id: ID!
+	consumptions: BigInt!
+	active: Boolean!
+
+  forwarders: [Forwarder!]! @derivedFrom(field: "parent")
+  configs: [Config!]! @derivedFrom(field: "parent")
+}
+
+type Forwardable @entity {
+  id: ID!
+	forwarder: Forwarder!
+	config: Config!
 }
 
 type Forwarder @entity {
-  id: String!
+  id: ID!
   parent: Parent!
   index: Int!
-  flushReady: [String!]!
+
+  forwardables: [Forwardable!]! @derivedFrom(field: "forwarder")
 }
 
 type Config @entity {
-  id: String!
+  id: ID!
   parent: Parent!
   token: Bytes!
   maxGasPrice: BigInt!
   min: BigInt!
+
+  forwardables: [Forwardable!]! @derivedFrom(field: "config")
+}
+
+type GlobalData @entity {
+  id: ID!
+
+	flushConsumptionsCount: BigInt
+	flushConsumed: BigInt
+
+	createConsumptionsCount: BigInt
+	createConsumed: BigInt
 }

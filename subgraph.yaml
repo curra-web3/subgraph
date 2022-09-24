@@ -31,7 +31,7 @@ dataSources:
     name: GasStation
     network: ganache
     source:
-      address: "0xcFecf32ef8e1246A337f017E517151754D0595ca"
+      address: "0xD8867285f90cF3983D755CbebEbBEaf8C21A817E"
       abi: GasStation
     mapping:
       kind: ethereum/events
