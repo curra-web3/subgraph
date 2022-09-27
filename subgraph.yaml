@@ -16,6 +16,7 @@ templates:
       entities:
         - Parent
         - Forwarder
+        - Forwardable
         - Config
       abis:
         - name: GasStation
@@ -40,6 +41,7 @@ dataSources:
       entities:
         - Parent
         - Forwarder
+        - Forwardable
         - Config
       abis:
         - name: GasStation
@@ -51,4 +53,8 @@ dataSources:
           handler: handleFilled
         - event: ConfigSet(address,address,uint256,uint256)
           handler: handleConfigSet
+        - event: CreateConsumed(uint256,address,address,address)
+          handler: handleCreateConsumed
+        - event: FlushConsumed(uint256,address,address,address)
+          handler: handleFlushConsumed
       file: ./src/GasStation.mapping.ts
