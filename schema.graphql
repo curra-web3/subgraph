@@ -1,24 +1,31 @@
 type Parent @entity {
   id: ID!
-	consumptions: BigInt!
-	active: Boolean!
+
+	createConsumptionsCount: Int!
+	createConsumed: BigInt!
+
+	flushConsumptionsCount: Int!
+	flushConsumed: BigInt!
+
+  assignableForwardersCount: Int!
 
   forwarders: [Forwarder!]! @derivedFrom(field: "parent")
   configs: [Config!]! @derivedFrom(field: "parent")
-}
-
-type Forwardable @entity {
-  id: ID!
-	forwarder: Forwarder!
-	config: Config!
 }
 
 type Forwarder @entity {
   id: ID!
   parent: Parent!
   index: Int!
-
   forwardables: [Forwardable!]! @derivedFrom(field: "forwarder")
+}
+
+type Forwardable @entity {
+  id: ID!
+  ready: Boolean!
+  balance: BigInt!
+	forwarder: Forwarder!
+	config: Config!
 }
 
 type Config @entity {
@@ -31,12 +38,12 @@ type Config @entity {
   forwardables: [Forwardable!]! @derivedFrom(field: "config")
 }
 
-type GlobalData @entity {
+type Global @entity {
   id: ID!
 
-	flushConsumptionsCount: BigInt
-	flushConsumed: BigInt
+	flushConsumptionsCount: Int!
+	flushConsumed: BigInt!
 
-	createConsumptionsCount: BigInt
-	createConsumed: BigInt
+	createConsumptionsCount: Int!
+	createConsumed: BigInt!
 }
