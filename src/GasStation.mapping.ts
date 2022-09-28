@@ -9,8 +9,8 @@ import {
 import { ERC20 } from "../generated/GasStation/ERC20";
 import { Parent, Config, Forwarder } from "../generated/schema";
 import { IndexedERC20 } from "../generated/templates";
-import { assignForwarders } from "./modules/forwarders";
 import {
+  assignParentForwarders,
   createParent,
   increaseParentStats,
   tryToAssignMoreForwarders,
@@ -21,39 +21,42 @@ import {
   reindexConfigForwardablesReadiness,
 } from "./modules/config";
 
-function getParentOrAbort(address: Address): Parent {
-  let parent = Parent.load(address.toHexString());
+function getParentOrAbort(id: string): Parent {
+  let parent = Parent.load(id);
   if (!parent) throw new Error("No parent entity. Logic invariant");
   return parent;
 }
 
 export function handleFlushedConsumed(event: FlushConsumed): void {
-  let parent = getParentOrAbort(event.params.parent);
+  let parent = getParentOrAbort(event.params.parent.toHexString());
   increaseParentStats(parent, BigInt.fromU32(0), 0, event.params.value, 1);
-  let forwarder = Forwarder.load(event.params.forwarder.toHexString());
-  if (forwarder)
-    tryToAssignMoreForwarders(event.address, parent, forwarder.index);
-  // parent can become inactive after capacity drained
-  parent.save();
 
   let global = getGlobal();
   increaseGlobalStats(global, BigInt.fromU32(0), 0, event.params.value, 1);
   global.save();
-}
 
-export function handleCreateConsumed(event: CreateConsumed): void {
-  let parent = getParentOrAbort(event.params.parent);
-  increaseParentStats(parent, event.params.value, 1, BigInt.fromU32(0), 0);
   let forwarder = Forwarder.load(event.params.forwarder.toHexString());
   if (forwarder) {
     tryToAssignMoreForwarders(event.address, parent, forwarder.index);
   }
   // parent can become inactive after capacity drained
   parent.save();
+}
+
+export function handleCreateConsumed(event: CreateConsumed): void {
+  let parent = getParentOrAbort(event.params.parent.toHexString());
+  increaseParentStats(parent, event.params.value, 1, BigInt.fromU32(0), 0);
 
   let global = getGlobal();
   increaseGlobalStats(global, event.params.value, 1, BigInt.fromU32(0), 0);
   global.save();
+
+  let forwarder = Forwarder.load(event.params.forwarder.toHexString());
+  if (forwarder) {
+    tryToAssignMoreForwarders(event.address, parent, forwarder.index);
+  }
+  // parent can become inactive after capacity drained
+  parent.save();
 }
 
 export function handleFilled(event: Filled): void {
@@ -64,7 +67,12 @@ export function handleFilled(event: Filled): void {
   if (!parent) {
     log.info("Creating new parent {}", [parentId]);
     parent = createParent(parentId);
-    assignForwarders(0, 500, event.address, parentAddress);
+    assignParentForwarders(
+      0,
+      parent.assignableForwardersCount,
+      event.address,
+      parent
+    );
   }
 
   parent.save();
@@ -90,19 +98,25 @@ export function handleConfigSet(event: ConfigSet): void {
       log.info("Skipping config – not a ERC20 token {}", [token.toHex()]);
       return;
     }
-    config.min = event.params.min;
     config.token = event.params.token;
     IndexedERC20.create(Address.fromBytes(config.token));
   } else {
     minValueChanged = config.min != event.params.min;
-    // if min value in config changed it's possible that some forwarder will become non forwardable/forwardable
+    // if min value in config has changed it's possible that some forwarder will become non forwardable/forwardable
     if (minValueChanged) {
       log.info("Min value changed for config {}. Min value – {} -> {}", [
         configId,
         config.min.toString(),
         event.params.min.toString(),
       ]);
-      reindexConfigForwardablesReadiness(config);
+      let parent = getParentOrAbort(parentId);
+      reindexConfigForwardablesReadiness(
+        Address.fromBytes(config.token),
+        event.params.min,
+        event.address,
+        event.params.parent,
+        parent.assignedForwardersCount
+      );
     }
   }
 

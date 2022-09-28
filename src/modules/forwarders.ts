@@ -17,6 +17,17 @@ export function getForwarderBalance(
   return erc20.balanceOf(forwarder);
 }
 
+export function computeForwarderAddress(
+  gasStation: GasStation,
+  parent: Address,
+  i: u32
+): Address {
+  return gasStation.computeForwarderAddress(
+    Bytes.fromHexString(numberToUint256(i)),
+    parent
+  );
+}
+
 export function assignForwarders(
   from: u32,
   to: u32,
@@ -29,13 +40,9 @@ export function assignForwarders(
     to.toString(),
   ]);
 
-  let gs = GasStation.bind(gasStation);
+  const gs = GasStation.bind(gasStation);
   for (let i = from; i < to; i++) {
-    let forwarderAddress = gs.computeForwarderAddress(
-      Bytes.fromHexString(numberToUint256(i)),
-      parent
-    );
-
+    let forwarderAddress = computeForwarderAddress(gs, parent, i);
     let forwarder = new Forwarder(forwarderAddress.toHexString());
     forwarder.parent = parent.toHexString();
     forwarder.index = i;

@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { Parent } from "../../generated/schema";
 import { assignForwarders } from "./forwarders";
 
@@ -8,14 +8,19 @@ export function createParent(id: string): Parent {
   parent.flushConsumptionsCount = 0;
   parent.createConsumed = BigInt.fromU64(0);
   parent.createConsumptionsCount = 0;
-  parent.assignableForwardersCount = 0;
+  parent.assignableForwardersCount = 100;
+  parent.assignedForwardersCount = 0;
   return parent;
 }
 
 export function getAssignableForwardersCount(parent: Parent): u32 {
   let totalConsumptionsCount =
     parent.flushConsumptionsCount + parent.createConsumptionsCount;
-  return totalConsumptionsCount / 10;
+  let assignableForwardersCount = totalConsumptionsCount / 10;
+  // max value
+  return parent.assignableForwardersCount > assignableForwardersCount
+    ? parent.assignableForwardersCount
+    : assignableForwardersCount;
 }
 
 export function increaseParentStats(
@@ -41,17 +46,37 @@ export function tryToAssignMoreForwarders(
   parent: Parent,
   lastConsumedForwarderIndex: i32
 ): void {
-  let forwardersCount = parent.forwarders.length;
-  let assignableForwardersCount = parent.assignableForwardersCount;
+  let assigned = parent.assignedForwardersCount;
+  let assignable = parent.assignableForwardersCount;
   let assignToIndex = lastConsumedForwarderIndex + 100;
-  let assignRequired = assignToIndex > forwardersCount;
+  let assignRequired = assignToIndex > assigned;
+
+  log.info(
+    "Trying to assign new forwarders for parent – {}, assignable – {}, assigned – {}, assign to – {}, assign required – {}",
+    [
+      parent.id,
+      assignable.toString(),
+      assigned.toString(),
+      assignToIndex.toString(),
+      assignRequired.toString(),
+    ]
+  );
 
   if (assignRequired) {
-    let to =
-      assignableForwardersCount < assignToIndex
-        ? assignableForwardersCount
-        : assignToIndex;
-    let from = forwardersCount;
-    assignForwarders(from, to, gasStation, Address.fromString(parent.id));
+    let to = assignable < assignToIndex ? assignable : assignToIndex;
+    let from = assigned;
+    if (to > from) {
+      assignParentForwarders(from, to, gasStation, parent);
+    }
   }
+}
+
+export function assignParentForwarders(
+  from: u32,
+  to: u32,
+  gasStation: Address,
+  parent: Parent
+): void {
+  assignForwarders(from, to, gasStation, Address.fromString(parent.id));
+  parent.assignedForwardersCount += to - from;
 }
