@@ -27,7 +27,7 @@ function getParentOrAbort(id: string): Parent {
   return parent;
 }
 
-export function handleFlushedConsumed(event: FlushConsumed): void {
+export function handleFlushConsumed(event: FlushConsumed): void {
   let parent = getParentOrAbort(event.params.parent.toHexString());
   increaseParentStats(parent, BigInt.fromU32(0), 0, event.params.value, 1);
 

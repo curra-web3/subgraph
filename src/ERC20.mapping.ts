@@ -23,7 +23,7 @@ export function handleTransfer(event: Transfer): void {
     log.info(
       "Catched transfer ({}) from forwarder ({}) with value of {} to {}",
       [
-        event.address.toString(),
+        event.address.toHexString(),
         forwarder.id,
         event.params.value.toString(),
         event.params.to.toHexString(),
