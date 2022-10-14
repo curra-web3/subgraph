@@ -7,19 +7,10 @@ import {
   FlushConsumed,
 } from "../generated/GasStation/GasStation";
 import { ERC20 } from "../generated/GasStation/ERC20";
-import { Parent, Config, Forwarder } from "../generated/schema";
-import { IndexedERC20 } from "../generated/templates";
-import {
-  assignParentForwarders,
-  createParent,
-  increaseParentStats,
-  tryToAssignMoreForwarders,
-} from "./modules/parent";
+import { Parent, Config } from "../generated/schema";
+import { createParent, increaseParentStats } from "./modules/parent";
 import { getGlobal, increaseGlobalStats } from "./modules/global";
-import {
-  computeConfigId,
-  reindexConfigForwardablesReadiness,
-} from "./modules/config";
+import { computeConfigId } from "./modules/config";
 
 function getParentOrAbort(id: string): Parent {
   let parent = Parent.load(id);
@@ -35,10 +26,6 @@ export function handleFlushConsumed(event: FlushConsumed): void {
   increaseGlobalStats(global, BigInt.fromU32(0), 0, event.params.value, 1);
   global.save();
 
-  let forwarder = Forwarder.load(event.params.forwarder.toHexString());
-  if (forwarder) {
-    tryToAssignMoreForwarders(event.address, parent, forwarder.index);
-  }
   // parent can become inactive after capacity drained
   parent.save();
 }
@@ -51,10 +38,6 @@ export function handleCreateConsumed(event: CreateConsumed): void {
   increaseGlobalStats(global, event.params.value, 1, BigInt.fromU32(0), 0);
   global.save();
 
-  let forwarder = Forwarder.load(event.params.forwarder.toHexString());
-  if (forwarder) {
-    tryToAssignMoreForwarders(event.address, parent, forwarder.index);
-  }
   // parent can become inactive after capacity drained
   parent.save();
 }
@@ -67,15 +50,8 @@ export function handleFilled(event: Filled): void {
   if (!parent) {
     log.info("Creating new parent {}", [parentId]);
     parent = createParent(parentId);
-    assignParentForwarders(
-      0,
-      parent.assignableForwardersCount,
-      event.address,
-      parent
-    );
+    parent.save();
   }
-
-  parent.save();
 }
 
 export function handleConfigSet(event: ConfigSet): void {
@@ -89,8 +65,6 @@ export function handleConfigSet(event: ConfigSet): void {
     return;
   }
 
-  let minValueChanged = false;
-
   if (!config) {
     config = new Config(configId);
     config.parent = event.params.parent.toHexString();
@@ -99,25 +73,6 @@ export function handleConfigSet(event: ConfigSet): void {
       return;
     }
     config.token = event.params.token;
-    IndexedERC20.create(Address.fromBytes(config.token));
-  } else {
-    minValueChanged = config.min != event.params.min;
-    // if min value in config has changed it's possible that some forwarder will become non forwardable/forwardable
-    if (minValueChanged) {
-      log.info("Min value changed for config {}. Min value – {} -> {}", [
-        configId,
-        config.min.toString(),
-        event.params.min.toString(),
-      ]);
-      let parent = getParentOrAbort(parentId);
-      reindexConfigForwardablesReadiness(
-        Address.fromBytes(config.token),
-        event.params.min,
-        event.address,
-        event.params.parent,
-        parent.assignedForwardersCount
-      );
-    }
   }
 
   config.maxGasPrice = event.params.maxGasPrice;

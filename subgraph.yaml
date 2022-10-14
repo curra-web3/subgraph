@@ -3,34 +3,10 @@ description: Subgraph to index curra addresses
 repository: https://github.com/<YOUR_GITHUB_NAME>/erc721-example
 schema:
   file: ./schema.graphql
-templates:
-  - name: IndexedERC20
-    kind: ethereum/contract
-    network: ganache
-    source:
-      abi: ERC20
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - Parent
-        - Forwarder
-        - Forwardable
-        - Config
-      abis:
-        - name: GasStation
-          file: ./abis/GasStation.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-      file: ./src/ERC20.mapping.ts
 dataSources:
   - kind: ethereum/contract
     name: GasStation
-    network: ganache
+    network: dev
     source:
       address: "0xB1916eFed54c084692Dd31064027550091Ca5D4c"
       abi: GasStation
@@ -40,8 +16,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Parent
-        - Forwarder
-        - Forwardable
         - Config
       abis:
         - name: GasStation
