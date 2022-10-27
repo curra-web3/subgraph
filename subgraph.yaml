@@ -6,9 +6,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: GasStation
-    network: dev
+    network: eth
     source:
-      address: "0xB1916eFed54c084692Dd31064027550091Ca5D4c"
+      address: "0xf72a04D80152a16e31af5258c74fc4288a75C596"
       abi: GasStation
     mapping:
       kind: ethereum/events
