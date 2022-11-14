@@ -6,9 +6,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: GasStation
-    network: eth
+    network: goerli
     source:
-      address: "0xf72a04D80152a16e31af5258c74fc4288a75C596"
+      address: "0x79b7A3c17940aa138B0893a0cE7412752930F713"
       abi: GasStation
     mapping:
       kind: ethereum/events
@@ -20,13 +20,13 @@ dataSources:
       abis:
         - name: GasStation
           file: ./abis/GasStation.json
-        - name: ERC20
-          file: ./abis/ERC20.json
       eventHandlers:
         - event: Filled(uint256,address)
           handler: handleFilled
-        - event: ConfigSet(address,address,uint256,uint256)
-          handler: handleConfigSet
+        - event: WhitelistedAssetAdded(address,address)
+          handler: handleWhitelistedAssetAdded
+        - event: WhitelistedAssetRemoved(address,address)
+          handler: handleWhitelistedAssetRemoved
         - event: CreateConsumed(uint256,address,address,address)
           handler: handleCreateConsumed
         - event: FlushConsumed(uint256,address,address,address)

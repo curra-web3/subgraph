@@ -14,8 +14,6 @@ type Config @entity {
   id: ID!
   parent: Parent!
   token: Bytes!
-  maxGasPrice: BigInt!
-  min: BigInt!
 }
 
 type Global @entity {

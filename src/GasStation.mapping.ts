@@ -1,12 +1,12 @@
-import { Address, log, BigInt } from "@graphprotocol/graph-ts";
+import { log, BigInt, store } from "@graphprotocol/graph-ts";
 
 import {
   Filled,
-  ConfigSet,
+  WhitelistedAssetAdded,
   CreateConsumed,
   FlushConsumed,
+  WhitelistedAssetRemoved,
 } from "../generated/GasStation/GasStation";
-import { ERC20 } from "../generated/GasStation/ERC20";
 import { Parent, Config } from "../generated/schema";
 import { createParent, increaseParentStats } from "./modules/parent";
 import { getGlobal, increaseGlobalStats } from "./modules/global";
@@ -26,7 +26,6 @@ export function handleFlushConsumed(event: FlushConsumed): void {
   increaseGlobalStats(global, BigInt.fromU32(0), 0, event.params.value, 1);
   global.save();
 
-  // parent can become inactive after capacity drained
   parent.save();
 }
 
@@ -38,7 +37,6 @@ export function handleCreateConsumed(event: CreateConsumed): void {
   increaseGlobalStats(global, event.params.value, 1, BigInt.fromU32(0), 0);
   global.save();
 
-  // parent can become inactive after capacity drained
   parent.save();
 }
 
@@ -54,39 +52,34 @@ export function handleFilled(event: Filled): void {
   }
 }
 
-export function handleConfigSet(event: ConfigSet): void {
+export function handleWhitelistedAssetAdded(
+  event: WhitelistedAssetAdded
+): void {
   let parentId = event.params.parent.toHexString();
   let token = event.params.token;
   let configId = computeConfigId(parentId, token);
 
   let config = Config.load(configId);
-  if (event.params.min.isZero() && !config) {
-    log.info("No config {} and min value set to 0. Skipping", [configId]);
-    return;
-  }
 
   if (!config) {
     config = new Config(configId);
     config.parent = event.params.parent.toHexString();
-    if (ERC20.bind(event.params.token).try_decimals().reverted) {
-      log.info("Skipping config – not a ERC20 token {}", [token.toHex()]);
-      return;
-    }
     config.token = event.params.token;
   }
 
-  config.maxGasPrice = event.params.maxGasPrice;
-  config.min = event.params.min;
-
-  // check if address is erc20 token
   config.save();
-  log.info(
-    "Config updated or created {}. Min – {}, token – {}, max gas price – {}",
-    [
-      configId,
-      config.min.toString(),
-      config.token.toHexString(),
-      config.maxGasPrice.toString(),
-    ]
-  );
+  log.info("Config updated or created {}. Token – {}", [
+    configId,
+    config.token.toHexString(),
+  ]);
+}
+
+export function handleWhitelistedAssetRemoved(
+  event: WhitelistedAssetRemoved
+): void {
+  let parentId = event.params.parent.toHexString();
+  let token = event.params.token;
+  let configId = computeConfigId(parentId, token);
+  store.remove("Config", configId);
+  log.info("Config removed {}", [configId]);
 }
