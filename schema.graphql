@@ -1,5 +1,23 @@
-type Parent @entity {
+type Holder @entity {
   id: ID!
+  ownerships: [OwnershipToken!]! @derivedFrom(field: "holder")
+}
+
+type WhitelistedAsset @entity {
+  id: ID!
+  ownership: OwnershipToken!
+  address: Bytes!
+}
+
+type WhitelistedAddress @entity {
+  id: ID!
+  value: Bytes!
+  ownership: OwnershipToken!
+}
+
+type OwnershipToken @entity {
+  id: ID!
+  holder: Holder!
 
   createConsumptionsCount: Int!
   createConsumed: BigInt!
@@ -7,13 +25,8 @@ type Parent @entity {
   flushConsumptionsCount: Int!
   flushConsumed: BigInt!
 
-  configs: [Config!]! @derivedFrom(field: "parent")
-}
-
-type Config @entity {
-  id: ID!
-  parent: Parent!
-  token: Bytes!
+  whitelisedAssets: [WhitelistedAsset!]! @derivedFrom(field: "ownership")
+  whitelistedAddresses: [WhitelistedAddress!]! @derivedFrom(field: "ownership")
 }
 
 type Global @entity {

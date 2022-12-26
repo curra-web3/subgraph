@@ -1,4 +1,4 @@
-import { log, BigInt, store } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 import {
   Filled,
@@ -6,80 +6,90 @@ import {
   CreateConsumed,
   FlushConsumed,
   WhitelistedAssetRemoved,
+  WhitelistedAddressAdded,
+  WhitelistedAddressRemoved,
+  Transfer,
 } from "../generated/GasStation/GasStation";
-import { Parent, Config } from "../generated/schema";
-import { createParent, increaseParentStats } from "./modules/parent";
-import { getGlobal, increaseGlobalStats } from "./modules/global";
-import { computeConfigId } from "./modules/config";
-
-function getParentOrAbort(id: string): Parent {
-  let parent = Parent.load(id);
-  if (!parent) throw new Error("No parent entity. Logic invariant");
-  return parent;
-}
+import {
+  createOwnership,
+  createOwnershipIfNotExists,
+  increaseOwnershipStats,
+  tokenIdToId,
+} from "./modules/ownership";
+import { increaseGlobalStats } from "./modules/global";
+import {
+  removeWhitelistedAsset,
+  upsertWhitelistedAsset,
+} from "./modules/whitelistedAsset";
+import {
+  addWhitelistedAddress,
+  removeWhitelistedAddress,
+} from "./modules/whitelisedAddress";
+import { createHolder } from "./modules/holder";
 
 export function handleFlushConsumed(event: FlushConsumed): void {
-  let parent = getParentOrAbort(event.params.parent.toHexString());
-  increaseParentStats(parent, BigInt.fromU32(0), 0, event.params.value, 1);
+  increaseOwnershipStats(
+    tokenIdToId(event.params.ownershipId),
+    BigInt.fromU32(0),
+    0,
+    event.params.value,
+    1
+  );
 
-  let global = getGlobal();
-  increaseGlobalStats(global, BigInt.fromU32(0), 0, event.params.value, 1);
-  global.save();
-
-  parent.save();
+  increaseGlobalStats(BigInt.fromU32(0), 0, event.params.value, 1);
 }
 
 export function handleCreateConsumed(event: CreateConsumed): void {
-  let parent = getParentOrAbort(event.params.parent.toHexString());
-  increaseParentStats(parent, event.params.value, 1, BigInt.fromU32(0), 0);
+  increaseOwnershipStats(
+    tokenIdToId(event.params.ownershipId),
+    event.params.value,
+    1,
+    BigInt.fromU32(0),
+    0
+  );
 
-  let global = getGlobal();
-  increaseGlobalStats(global, event.params.value, 1, BigInt.fromU32(0), 0);
-  global.save();
-
-  parent.save();
+  increaseGlobalStats(event.params.value, 1, BigInt.fromU32(0), 0);
 }
 
 export function handleFilled(event: Filled): void {
-  let parentAddress = event.params.parent;
-  let parentId = parentAddress.toHexString();
-  let parent = Parent.load(parentId);
-
-  if (!parent) {
-    log.info("Creating new parent {}", [parentId]);
-    parent = createParent(parentId);
-    parent.save();
-  }
+  createOwnershipIfNotExists(event.params.ownershipId);
 }
 
 export function handleWhitelistedAssetAdded(
   event: WhitelistedAssetAdded
 ): void {
-  let parentId = event.params.parent.toHexString();
-  let token = event.params.token;
-  let configId = computeConfigId(parentId, token);
-
-  let config = Config.load(configId);
-
-  if (!config) {
-    config = new Config(configId);
-    config.parent = event.params.parent.toHexString();
-    config.token = event.params.token;
-  }
-
-  config.save();
-  log.info("Config updated or created {}. Token – {}", [
-    configId,
-    config.token.toHexString(),
-  ]);
+  let ownershipId = tokenIdToId(event.params.ownershipId);
+  let address = event.params.token;
+  upsertWhitelistedAsset(ownershipId, address);
 }
 
 export function handleWhitelistedAssetRemoved(
   event: WhitelistedAssetRemoved
 ): void {
-  let parentId = event.params.parent.toHexString();
-  let token = event.params.token;
-  let configId = computeConfigId(parentId, token);
-  store.remove("Config", configId);
-  log.info("Config removed {}", [configId]);
+  let ownershipId = tokenIdToId(event.params.ownershipId);
+  let address = event.params.token;
+  removeWhitelistedAsset(ownershipId, address);
+}
+
+export function handleWhitelistedAddressAdded(
+  event: WhitelistedAddressAdded
+): void {
+  addWhitelistedAddress(
+    event.params.value,
+    tokenIdToId(event.params.ownershipId)
+  );
+}
+
+export function handleWhitelistedAddressRemoved(
+  event: WhitelistedAddressRemoved
+): void {
+  removeWhitelistedAddress(
+    event.params.value,
+    tokenIdToId(event.params.ownershipId)
+  );
+}
+
+export function handleTransfer(event: Transfer): void {
+  let holder = createHolder(event.params.to);
+  createOwnership(event.params.tokenId, holder.id);
 }

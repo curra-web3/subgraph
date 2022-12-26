@@ -6,29 +6,38 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: GasStation
-    network: goerli
+    network: dev
     source:
-      address: "0x79b7A3c17940aa138B0893a0cE7412752930F713"
       abi: GasStation
+      address: "0xCA1310a60cb6a15686a5A469ba2447A9313a9B3c"
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Parent
-        - Config
+        - Ownership
+        - WhitelistedAsset
+        - Holder
+        - WhitelistedAddress
       abis:
         - name: GasStation
           file: ./abis/GasStation.json
       eventHandlers:
-        - event: Filled(uint256,address)
+        - event: Filled(uint256,uint256)
           handler: handleFilled
-        - event: WhitelistedAssetAdded(address,address)
+        - event: WhitelistedAssetAdded(uint256,address)
           handler: handleWhitelistedAssetAdded
-        - event: WhitelistedAssetRemoved(address,address)
+        - event: WhitelistedAssetRemoved(uint256,address)
           handler: handleWhitelistedAssetRemoved
-        - event: CreateConsumed(uint256,address,address,address)
+        - event: CreateConsumed(uint256,uint256,address,address)
           handler: handleCreateConsumed
-        - event: FlushConsumed(uint256,address,address,address)
+        - event: FlushConsumed(uint256,uint256,address,address)
           handler: handleFlushConsumed
+        - event: WhitelistedAddressAdded(uint256,address)
+          handler: handleWhitelistedAddressAdded
+        - event: WhitelistedAddressRemoved(uint256,address)
+          handler: handleWhitelistedAddressRemoved
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
       file: ./src/GasStation.mapping.ts

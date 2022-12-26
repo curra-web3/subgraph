@@ -2,7 +2,7 @@ import { Global } from "../../generated/schema";
 
 import { BigInt } from "@graphprotocol/graph-ts";
 
-export function getGlobal(): Global {
+function getGlobal(): Global {
   let global = Global.load("singleton");
 
   if (!global) {
@@ -19,12 +19,12 @@ export function getGlobal(): Global {
 }
 
 export function increaseGlobalStats(
-  global: Global,
   createConsumed: BigInt,
   createConsumptionsCount: u32,
   flushConsumed: BigInt,
   flushConsumptionsCount: u32
 ): void {
+  let global = getGlobal();
   global.createConsumed = global.createConsumed.plus(createConsumed);
   global.createConsumptionsCount =
     global.createConsumptionsCount + createConsumptionsCount;
@@ -32,4 +32,5 @@ export function increaseGlobalStats(
   global.flushConsumed = global.flushConsumed.plus(flushConsumed);
   global.flushConsumptionsCount =
     global.flushConsumptionsCount + flushConsumptionsCount;
+  global.save();
 }
