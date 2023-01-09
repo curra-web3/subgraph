@@ -1,8 +1,8 @@
 {
     "goerli": {
         "GasStation": {
-            "address": "0x37A874EEA24e0FC9ad6F47b0a9767CF30f0B4c2a",
-            "startBlock": 0
+            "address": "0x87B9D0c1889b6f6a212FaD6BB5f0D81eba5fdbAC",
+            "startBlock": 8277927
         }
     },
     "dev": {

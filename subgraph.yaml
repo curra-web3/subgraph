@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: GasStation
-    network: dev
+    network: goerli
     source:
       abi: GasStation
-      address: "0xCA1310a60cb6a15686a5A469ba2447A9313a9B3c"
-      startBlock: 0
+      address: "0x87B9D0c1889b6f6a212FaD6BB5f0D81eba5fdbAC"
+      startBlock: 8277927
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
