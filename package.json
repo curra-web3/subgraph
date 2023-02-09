@@ -1,21 +1,23 @@
 {
-  "name": "curra-subgraph",
-  "version": "0.1.0",
-  "license": "MIT",
-  "scripts": {
-    "create": "graph create curra --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create curra --node http://127.0.0.1:8020",
-    "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy curra --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy curra --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020"
-  },
-  "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.37.1",
-    "@graphprotocol/graph-ts": "^0.29.0",
-    "matchstick-as": "^0.5.0"
-  },
-  "dependencies": {
-    "source-map-support": "^0.5.21"
-  }
+	"name": "curra-subgraph",
+	"version": "0.1.0",
+	"license": "MIT",
+	"scripts": {
+		"create": "graph create curra --node https://api.thegraph.com/deploy/",
+		"create-local": "graph create curra --node http://127.0.0.1:8020",
+		"codegen": "graph codegen",
+		"build": "graph build",
+		"deploy": "graph deploy curra --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+		"deploy-local": "graph deploy curra --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020"
+	},
+	"devDependencies": {
+		"@graphprotocol/graph-cli": "^0.26.1",
+		"@graphprotocol/graph-ts": "^0.29.3"
+	},
+	"dependencies": {
+		"source-map-support": "^0.5.21"
+	},
+	"engines": {
+		"node": "18.12.1"
+	}
 }
