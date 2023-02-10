@@ -1,14 +1,14 @@
-specVersion: 0.0.4
-description: Subgraph to index curra addresses
-repository: https://github.com/<YOUR_GITHUB_NAME>/erc721-example
+specVersion: 0.0.2
+description: Subgraph to index Curra contracts
+repository: https://github.com/curra-web3/subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: GasStation
+    name: Traffic
     network: goerli
     source:
-      abi: GasStation
+      abi: Traffic
       address: "0x87B9D0c1889b6f6a212FaD6BB5f0D81eba5fdbAC"
       startBlock: 8277927
     mapping:
@@ -17,27 +17,14 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Ownership
-        - WhitelistedAsset
+        - Rule
         - Holder
-        - WhitelistedAddress
       abis:
-        - name: GasStation
-          file: ./abis/GasStation.json
+        - name: Traffic
+          file: ./abis/Traffic.json
       eventHandlers:
-        - event: Filled(uint256,uint256)
-          handler: handleFilled
-        - event: WhitelistedAssetAdded(uint256,address)
-          handler: handleWhitelistedAssetAdded
-        - event: WhitelistedAssetRemoved(uint256,address)
-          handler: handleWhitelistedAssetRemoved
-        - event: CreateConsumed(uint256,uint256,address,address)
-          handler: handleCreateConsumed
-        - event: FlushConsumed(uint256,uint256,address,address)
-          handler: handleFlushConsumed
-        - event: WhitelistedAddressAdded(uint256,address)
-          handler: handleWhitelistedAddressAdded
-        - event: WhitelistedAddressRemoved(uint256,address)
-          handler: handleWhitelistedAddressRemoved
+        - event: RuleSet(uint256,address)
+          handler: handleRuleSet
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/GasStation.mapping.ts
+      file: ./src/Traffic.mapping.ts

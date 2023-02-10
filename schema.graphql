@@ -1,40 +1,16 @@
 type Holder @entity {
   id: ID!
-  ownerships: [OwnershipToken!]! @derivedFrom(field: "holder")
+  ownerships: [Ownership!]! @derivedFrom(field: "holder")
 }
 
-type WhitelistedAsset @entity {
-  id: ID!
-  ownership: OwnershipToken!
-  address: Bytes!
-}
-
-type WhitelistedAddress @entity {
-  id: ID!
-  value: Bytes!
-  ownership: OwnershipToken!
-}
-
-type OwnershipToken @entity {
+type Ownership @entity {
   id: ID!
   holder: Holder!
-
-  createConsumptionsCount: Int!
-  createConsumed: BigInt!
-
-  flushConsumptionsCount: Int!
-  flushConsumed: BigInt!
-
-  whitelisedAssets: [WhitelistedAsset!]! @derivedFrom(field: "ownership")
-  whitelistedAddresses: [WhitelistedAddress!]! @derivedFrom(field: "ownership")
+  rule: Rule! @derivedFrom(field: "ownership")
 }
 
-type Global @entity {
+type Rule @entity {
   id: ID!
-
-  flushConsumptionsCount: Int!
-  flushConsumed: BigInt!
-
-  createConsumptionsCount: Int!
-  createConsumed: BigInt!
+  ownership: Ownership!
 }
+
