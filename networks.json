@@ -1,8 +1,8 @@
 {
     "goerli": {
         "Traffic": {
-            "address": "0x87B9D0c1889b6f6a212FaD6BB5f0D81eba5fdbAC",
-            "startBlock": 8277927
+            "address": "0xF0E03a1D9916d613038F629BadD3b90c55e76286",
+            "startBlock": 8497917
         }
     },
     "dev": {
