@@ -4,8 +4,8 @@ import { assert, describe, test } from "matchstick-as/assembly/index";
 import { toHolderId } from "../src/modules/holder";
 import { toOwnershipId } from "../src/modules/ownership";
 import { toRuleId } from "../src/modules/rule";
-import { handleRuleSet, handleTransfer } from "../src/Traffic.mapping";
-import { createRuleSet, createTransfer } from "./events";
+import { handleProxyDeployed, handleTransfer } from "../src/Curra.mapping";
+import { createProxyDeployed, createTransfer } from "./events";
 
 describe("handleTransfer()", () => {
 	test("Should create holder with ownership", () => {
@@ -35,8 +35,8 @@ describe("handleTransfer()", () => {
 		);
 		let ownershipId = BigInt.fromI32(1);
 
-		let event = createRuleSet(ownershipId, value);
-		handleRuleSet(event);
+		let event = createProxyDeployed(ownershipId, value);
+		handleProxyDeployed(event);
 
 		let ownershipEntityId = toOwnershipId(ownershipId);
 		let ruleEntityId = toRuleId(value);

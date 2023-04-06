@@ -1,10 +1,10 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
 
-import { RuleSet, Transfer } from "../generated/Traffic/Traffic";
+import { ProxyDeployed, Transfer } from "../generated/Curra/Curra";
 
-export function createRuleSet(ownershipId: BigInt, address: Address): RuleSet {
-	let event = changetype<RuleSet>(newMockEvent());
+export function createProxyDeployed(ownershipId: BigInt, address: Address): ProxyDeployed {
+	let event = changetype<ProxyDeployed>(newMockEvent());
 	event.parameters = new Array();
 	let idParam = new ethereum.EventParam(
 		"ownershipId",

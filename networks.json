@@ -1,13 +1,13 @@
 {
     "goerli": {
-        "Traffic": {
+        "Curra": {
             "address": "0xF0E03a1D9916d613038F629BadD3b90c55e76286",
             "startBlock": 8497917
         }
     },
     "dev": {
-        "Traffic": {
-            "address": "0x0D4C6C6605A729A379216C93e919711a081BEbA2",
+        "Curra": {
+            "address": "0xed5f560ca17482023456ae3f5a86bdab300051dd",
             "startBlock": 0
         }
     }
