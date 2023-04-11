@@ -1,8 +1,8 @@
 {
     "goerli": {
         "Curra": {
-            "address": "0xF0E03a1D9916d613038F629BadD3b90c55e76286",
-            "startBlock": 8497917
+            "address": "0x3ad03B0a24b829b5204DBEffa71F1D5FFA284095",
+            "startBlock": 8812940
         }
     },
     "dev": {
