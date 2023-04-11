@@ -9,7 +9,7 @@ dataSources:
     network: dev
     source:
       abi: Curra
-      address: "0x379db41316ae95ed2a4a178339cae6694ac6a751"
+      address: "0x69bfa9e656a2e968dc3b0afb1d687d6aa7af56c9"
       startBlock: 0
     mapping:
       kind: ethereum/events
