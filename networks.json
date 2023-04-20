@@ -5,6 +5,12 @@
             "startBlock": 8812940
         }
     },
+    "ethereum": {
+        "Curra": {
+            "address": "0xe4CEEF610adA5d88e66B210e4E49aC1A797193d0",
+            "startBlock": 17036960
+        }
+    },
     "dev": {
         "Curra": {
             "address": "0x69bfa9e656a2e968dc3b0afb1d687d6aa7af56c9",

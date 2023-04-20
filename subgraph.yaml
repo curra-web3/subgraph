@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Curra
-    network: goerli
+    network: ethereum
     source:
       abi: Curra
-      address: "0x3ad03B0a24b829b5204DBEffa71F1D5FFA284095"
-      startBlock: 8812940
+      address: "0xe4CEEF610adA5d88e66B210e4E49aC1A797193d0"
+      startBlock: 17036960
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
