@@ -1,14 +1,26 @@
 {
     "goerli": {
         "Curra": {
-            "address": "0x3ad03B0a24b829b5204DBEffa71F1D5FFA284095",
+            "address": "0x12f247a38f9e9e9072ad01d0f8b761237c9da86f",
             "startBlock": 8812940
         }
     },
     "ethereum": {
         "Curra": {
-            "address": "0xe4CEEF610adA5d88e66B210e4E49aC1A797193d0",
+            "address": "0x12f247a38f9e9e9072ad01d0f8b761237c9da86f",
             "startBlock": 17036960
+        }
+    },
+    "bsc": {
+        "Curra": {
+            "address": "0x12f247a38f9e9e9072ad01d0f8b761237c9da86f",
+            "startBlock": 28347276
+        }
+    },
+    "polygon": {
+        "Curra": {
+            "address": "0x12f247a38f9e9e9072ad01d0f8b761237c9da86f",
+            "startBlock": 42896368
         }
     },
     "dev": {
